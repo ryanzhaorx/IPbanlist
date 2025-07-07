@@ -21,10 +21,14 @@ jobs:
         run: |
           pip install requests
 
+      - name: Create results directory
+        run: |
+          mkdir -p results
+
       - name: Download and Process IP List
         run: |
           python process_ipsum.py https://raw.githubusercontent.com/stamparm/ipsum/master/ipsum.txt 
-
+          
       - name: Commit and Push Results
         run: |
           git config --local user.email "action@github.com"
