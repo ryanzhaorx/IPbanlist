@@ -1,5 +1,4 @@
 import re
-import os
 
 def is_valid_ipv4(ip):
     parts = ip.split('.')
@@ -39,7 +38,6 @@ def process_ip_content(content, output_dir="results", ips_per_file=1000):
     return file_count
 
 def write_to_file(lines, filename):
-    os.makedirs(os.path.dirname(filename), exist_ok=True)
     with open(filename, "w") as f:
         f.write("\n".join(lines))
 
