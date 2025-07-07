@@ -21,9 +21,9 @@ jobs:
         run: |
           pip install requests
 
-      - name: Create results directory
-        run: |
-          mkdir -p results
+      # - name: Create results directory
+      #   run: |
+      #     mkdir -p results
 
       - name: Download and Process IP List
         run: |
