@@ -38,8 +38,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 使用自动生成的令牌
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
+          git config --local user.email "ryanzhaorx09@outlook.com"
+          git config --local user.name "ryanzhaorx"
           
           # 检查是否有变更
           if [ -n "$(git status --porcelain)" ]; then
