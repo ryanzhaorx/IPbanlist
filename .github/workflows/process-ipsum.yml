@@ -2,16 +2,21 @@ name: Process IP List from Remote URL
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # 每天凌晨执行一次
-  workflow_dispatch:     # 支持手动触发
+    - cron: '0 0 * * *'
+  workflow_dispatch:
 
 jobs:
   process-ipsum:
     runs-on: ubuntu-latest
 
+    permissions:  # 添加权限部分
+      contents: write
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false  # 重要
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -19,8 +24,7 @@ jobs:
           python-version: '3.x'
 
       - name: Install Dependencies
-        run: |
-          pip install requests
+        run: pip install requests
 
       - name: Create Results Directory
         run: |
@@ -28,28 +32,21 @@ jobs:
           mkdir -p results
 
       - name: Download and Process IP List
-        run: |
-          python process_ipsum.py https://raw.githubusercontent.com/stamparm/ipsum/master/ipsum.txt 
+        run: python process_ipsum.py https://raw.githubusercontent.com/stamparm/ipsum/master/ipsum.txt
 
       - name: Configure Git and Push Changes
         env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 使用自动生成的令牌
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-
+          
           # 检查是否有变更
-          if [[ -n $(git status --porcelain) ]]; then
+          if [ -n "$(git status --porcelain)" ]; then
             echo "Changes detected. Committing and pushing..."
-
             git add results/*.txt
-            git commit -m "Update processed IP lists $(date)"
-
-            # 强制设置远程仓库地址并带上 token
-            git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/ryanzhaorx/IPbanlist.git
-
-            # 推送更改（main 分支）
-            git push origin HEAD:main --force-with-lease
+            git commit -m "Update processed IP lists $(date +'%Y-%m-%d %H:%M:%S')"
+            git push origin HEAD:main
           else
             echo "No changes to commit."
           fi
