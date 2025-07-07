@@ -8,15 +8,15 @@ on:
 jobs:
   process-ipsum:
     runs-on: ubuntu-latest
-
-    permissions:  # 添加权限部分
-      contents: write
+    
+    permissions:
+      contents: write  # 确保有写入权限
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-          persist-credentials: false  # 重要
+          persist-credentials: false  # 关键！防止覆盖认证信息
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -38,14 +38,15 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 使用自动生成的令牌
         run: |
-          git config --local user.email "ryanzhaorx09@outlook.com"
-          git config --local user.name "ryanzhaorx"
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
           
-          # 检查是否有变更
+          # 检查变更
           if [ -n "$(git status --porcelain)" ]; then
             echo "Changes detected. Committing and pushing..."
             git add results/*.txt
             git commit -m "Update processed IP lists $(date +'%Y-%m-%d %H:%M:%S')"
+            git remote set-url origin https://x-access-token:$GITHUB_TOKEN@github.com/${{ github.repository }}.git
             git push origin HEAD:main
           else
             echo "No changes to commit."
