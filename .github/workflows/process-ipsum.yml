@@ -30,19 +30,24 @@ jobs:
         run: |
           python process_ipsum.py https://raw.githubusercontent.com/stamparm/ipsum/master/ipsum.txt 
 
-      - name: Check for Changes and Commit
+      - name: Commit and Push Results
         env:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
 
-          if [[ -n $(git status --porcelain) ]]; then
-            echo "Changes detected. Committing and pushing..."
-            git add results/*.txt
-            git commit -m "Update processed IP lists $(date)"
-            
-            git push https://x-access-token:${GITHUB_TOKEN}@github.com/ryanzhaorx/IPbanlist.git HEAD:main
-          else
+          # 添加所有结果文件
+          git add results/*.txt
+
+          # 检查是否有变更
+          if git diff --staged --quiet; then
             echo "No changes to commit."
+          else
+            # 提交更改
+            git commit -m "Update IP lists $(date)"
+
+            # 推送到远程仓库（使用 Token 认证）
+            git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/ryanzhaorx/IPbanlist.git
+            git push origin HEAD:main  # 如果你用的是 master 分支，请改为 HEAD:master
           fi
