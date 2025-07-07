@@ -21,7 +21,7 @@ jobs:
         run: |
           pip install requests
 
-      - name: Create results directory
+      - name: Create or Clean Results Directory
         run: |
           rm -rf results || true
           mkdir -p results
@@ -29,11 +29,20 @@ jobs:
       - name: Download and Process IP List
         run: |
           python process_ipsum.py https://raw.githubusercontent.com/stamparm/ipsum/master/ipsum.txt 
-          
-      - name: Commit and Push Results
+
+      - name: Check for Changes and Commit
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add results/*.txt
-          git commit -m "Update processed IP lists $(date)"
-          git push origin main
+
+          if [[ -n $(git status --porcelain) ]]; then
+            echo "Changes detected. Committing and pushing..."
+            git add results/*.txt
+            git commit -m "Update processed IP lists $(date)"
+            
+            git push https://x-access-token:${GITHUB_TOKEN}@github.com/ryanzhaorx/IPbanlist.git HEAD:main
+          else
+            echo "No changes to commit."
+          fi
