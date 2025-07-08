@@ -31,6 +31,9 @@ jobs:
           rm -rf results || true
           mkdir -p results
 
+      - name: Show Current Time (for debug)
+        run: date -u
+
       - name: Download and Process IP List
         run: python process_ipsum.py https://raw.githubusercontent.com/stamparm/ipsum/master/ipsum.txt
 
