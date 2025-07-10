@@ -48,7 +48,7 @@ jobs:
           if [ -n "$(git status --porcelain)" ]; then
             echo "Changes detected. Committing and pushing..."
             git add results/*.txt
-            git commit -m "Update processed IP lists $(date +'%Y-%m-%d %H:%M:%S')"
+            git commit -m "Update processed IP lists $(date +'%Y-%m-%d %H:%M:%S') UTC"
             git remote set-url origin https://x-access-token:$GITHUB_TOKEN@github.com/${{ github.repository }}.git
             git push origin HEAD:main
           else
