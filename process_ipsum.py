@@ -9,7 +9,7 @@ def is_valid_ipv4(ip):
             return False
     return True
 
-def process_ip_content(content, output_dir="results", ips_per_file=1000):
+def process_ip_content(content, output_dir="results", ips_per_file=2000):
     seen_ips = set()
     file_count = 1
     output_lines = []
@@ -30,7 +30,7 @@ def process_ip_content(content, output_dir="results", ips_per_file=1000):
                     output_lines = []
                     file_count += 1
 
-    # 写入剩余不足1000的IP
+    # 写入剩余不足2000的IP
     if output_lines:
         write_to_file(output_lines, f"{output_dir}/{file_count}.txt")
 
